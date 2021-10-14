@@ -22,13 +22,12 @@ def generate_menu_keyboard():
             kb.add(InlineKeyboardButton(product["title"], callback_data=product_kb_cb.new(product["title"])))
         else:
             kb.insert(InlineKeyboardButton(product["title"], callback_data=product_kb_cb.new(product["title"])))
-        return kb
+    return kb
 
 
 @dp.message_handler(Text(equals="Menu"))
 async def show_menu(message: Message):
-    await message.answer(text="Here is our menu. \n"
-                              "If you want to go back — press \"cancel\" button",
+    await message.answer(text="Here is our menu.",
                          reply_markup=generate_menu_keyboard())
 
 
@@ -52,7 +51,7 @@ async def showing_potato(call: CallbackQuery):
                               "Price: 50KZT")
 
 
-@dp.callback_query_handler(text_contains="Potato")
+@dp.callback_query_handler(text_contains="Salt")
 async def showing_potato(call: CallbackQuery):
     await call.answer(cache_time=60)
     callback_data = call.data
