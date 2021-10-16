@@ -6,8 +6,8 @@ from aiogram.utils.callback_data import CallbackData
 
 from keyboards.inline.callback_data import show_callback
 from keyboards.inline.choice_buttons import choice
-from loader import dp
-from utils.apirequests import get_products
+from loader import dp, bot
+from utils.apirequests import get_products, get_product
 
 product_kb_cb: CallbackData = CallbackData("product_kb_cb", "title")
 
@@ -30,36 +30,17 @@ async def show_menu(message: Message):
     await message.answer(text="Here is our menu.",
                          reply_markup=generate_menu_keyboard())
 
-
-@dp.callback_query_handler(text_contains="Potato")
-async def showing_potato(call: CallbackQuery):
-    await call.answer(cache_time=60)
-    callback_data = call.data
-    logging.info(f"call = {callback_data}")
-
-    await call.message.answer("Name of the product: Potato. \n"
-                              "Price: 200KZT")
+products_show_kb_cb: CallbackData = CallbackData("products_show_kb_cb", "title")
 
 
-@dp.callback_query_handler(text_contains="Bread")
-async def showing_potato(call: CallbackQuery):
-    await call.answer(cache_time=60)
-    callback_data = call.data
-    logging.info(f"call = {callback_data}")
-
-    await call.message.answer("Name of the product: Bread. \n"
-                              "Price: 50KZT")
-
-
-@dp.callback_query_handler(text_contains="Salt")
-async def showing_potato(call: CallbackQuery):
-    await call.answer(cache_time=60)
-    callback_data = call.data
-    logging.info(f"call = {callback_data}")
-
-    await call.message.answer("Name of the product: Salt. \n"
-                              "Price: 200KZT")
-
+@dp.callback_query_handler(product_kb_cb.filter())
+async def cb_products_show_id(call: CallbackQuery, callback_data: dict):
+    id = callback_data["title"]
+    product = get_product(id)
+    text = f"Title: {product['title']}\n" \
+           f"Details: {product['details']}\n" \
+           f"Price: {product['price']}\n"
+    await bot.send_message(call.message.chat.id, text)
 
 @dp.callback_query_handler(text="cancel")
 async def cancel_showing(call: CallbackQuery):
