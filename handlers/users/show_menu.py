@@ -22,6 +22,8 @@ def generate_menu_keyboard():
             kb.add(InlineKeyboardButton(product["title"], callback_data=product_kb_cb.new(product["title"])))
         else:
             kb.insert(InlineKeyboardButton(product["title"], callback_data=product_kb_cb.new(product["title"])))
+
+    kb.add(InlineKeyboardButton("Cancel", callback_data="cancel"))
     return kb
 
 
@@ -30,7 +32,18 @@ async def show_menu(message: Message):
     await message.answer(text="Here is our menu.",
                          reply_markup=generate_menu_keyboard())
 
+
 products_show_kb_cb: CallbackData = CallbackData("products_show_kb_cb", "title")
+
+order = InlineKeyboardMarkup(inline_keyboard=[
+    [
+        InlineKeyboardButton(text="Order this product", callback_data="order")
+    ],
+    [
+        InlineKeyboardButton(text="Cancel ordering", callback_data="cancel")
+    ]
+]
+)
 
 
 @dp.callback_query_handler(product_kb_cb.filter())
@@ -41,8 +54,9 @@ async def cb_products_show_id(call: CallbackQuery, callback_data: dict):
            f"Details: {product['details']}\n" \
            f"Price: {product['price']}\n"
     await bot.send_message(call.message.chat.id, text)
+    await call.message.answer(f"Would you like to order this product?", reply_markup=order)
+
 
 @dp.callback_query_handler(text="cancel")
 async def cancel_showing(call: CallbackQuery):
-    await call.answer("Питонистов держат в подвале, спасите", show_alert=True)
     await call.message.edit_reply_markup()
