@@ -27,6 +27,7 @@ def get_products():
     ]
     return text
 
+
 def get_product(id):
     text = [
         {
@@ -49,10 +50,9 @@ def get_product(id):
         }
     ]
     for key, product in enumerate(text):
-        if id == product["title"]:
+        if id == product["id"]:
             return product
 
-def get_orders(order):
-    text = []
-    text.append(order)
-    return text
+
+def add_to_cart(product_id, user_id):
+    return True
