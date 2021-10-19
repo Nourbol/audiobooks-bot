@@ -7,7 +7,9 @@ from aiogram.utils.callback_data import CallbackData
 from keyboards.inline.callback_data import show_callback
 from keyboards.inline.choice_buttons import choice
 from loader import dp, bot
-from utils.apirequests import get_products, get_product
+from utils.apirequests import get_products, get_product, get_orders
+from states.order_products import orders
+
 
 product_kb_cb: CallbackData = CallbackData("product_kb_cb", "title")
 
@@ -35,7 +37,7 @@ async def show_menu(message: Message):
 
 products_show_kb_cb: CallbackData = CallbackData("products_show_kb_cb", "title")
 
-order = InlineKeyboardMarkup(inline_keyboard=[
+ordering = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(text="Order this product", callback_data="order")
     ],
@@ -48,14 +50,21 @@ order = InlineKeyboardMarkup(inline_keyboard=[
 
 @dp.callback_query_handler(product_kb_cb.filter())
 async def cb_products_show_id(call: CallbackQuery, callback_data: dict):
-    id = callback_data["title"]
-    product = get_product(id)
+    title = callback_data["title"]
+    product = get_product(title)
     text = f"Title: {product['title']}\n" \
            f"Details: {product['details']}\n" \
            f"Price: {product['price']}\n"
     await bot.send_message(call.message.chat.id, text)
-    await call.message.answer(f"Would you like to order this product?", reply_markup=order)
+    await call.message.answer(f"Would you like to order this product?", reply_markup=ordering)
 
+
+@dp.callback_query_handler(text="order")
+async def add_order(call: CallbackQuery, callback_data: dict):
+    title = callback_data["title"]
+    order = get_product(title)
+    get_orders(order)
+    await call.message.answer(f"Your order list has been succesfully uploaded")
 
 @dp.callback_query_handler(text="cancel")
 async def cancel_showing(call: CallbackQuery):

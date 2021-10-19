@@ -51,3 +51,8 @@ def get_product(id):
     for key, product in enumerate(text):
         if id == product["title"]:
             return product
+
+def get_orders(order):
+    text = []
+    text.append(order)
+    return text
