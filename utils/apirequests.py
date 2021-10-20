@@ -56,3 +56,26 @@ def get_product(id):
 
 def add_to_cart(product_id, user_id):
     return True
+
+def get_cart():
+    text = [
+        {
+            "id": "71192dd2-726d-4cb5-8897-088659eb4f93",
+            "title": "Potato",
+            "details": "A main dish",
+            "price": 200
+        },
+        {
+            "id": "3c3cc744-658b-4d09-87f5-c5794d82c567",
+            "title": "Bread",
+            "details": "Additional",
+            "price": 50
+        },
+        {
+            "id": "863d3df4-4397-4de1-8282-8080bc20395b",
+            "title": "Salt",
+            "details": "Additional",
+            "price": 200
+        }
+    ]
+    return text

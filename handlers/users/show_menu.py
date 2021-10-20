@@ -72,3 +72,4 @@ async def add_order(call: CallbackQuery, callback_data: dict):
 @dp.callback_query_handler(text="cancel")
 async def cancel_showing(call: CallbackQuery):
     await call.message.edit_reply_markup()
+    await call.message.delete()
