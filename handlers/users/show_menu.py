@@ -7,15 +7,36 @@ from aiogram.utils.callback_data import CallbackData
 from keyboards.inline.callback_data import show_callback
 from keyboards.inline.choice_buttons import choice
 from loader import dp, bot
-from utils.apirequests import get_products, get_product, add_to_cart
+from utils.apirequests import get_products_by_category, get_product, add_to_cart
 from states.order_products import orders
 
 product_kb_cb: CallbackData = CallbackData("product_kb_cb", "id")
+category_kb_cb: CallbackData = CallbackData("category_kb_cb", "category")
 
 
-def generate_menu_keyboard():
+def category_kb():
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [
+                InlineKeyboardButton(text="Salads", callback_data=category_kb_cb.new(category="Salad"))
+        ],
+        [
+            InlineKeyboardButton(text="First dishes", callback_data=category_kb_cb.new(category="First dish"))
+        ],
+        [
+            InlineKeyboardButton(text="Second dishes", callback_data=category_kb_cb.new(category="Second dishes"))
+        ],
+        [
+            InlineKeyboardButton(text="Garnish", callback_data=category_kb_cb.new(category="Garnish"))
+        ],
+        [
+            InlineKeyboardButton(text="Cancel", callback_data=category_kb_cb.new("cancel"))
+        ]
+    ])
+
+
+def generate_menu_keyboard(category):
     kb = InlineKeyboardMarkup()
-    products = get_products()
+    products = get_products_by_category(category)
     for key, product in enumerate(products):
         if product["title"] is None or product["title"] == '':
             continue
@@ -31,7 +52,13 @@ def generate_menu_keyboard():
 @dp.message_handler(Text(equals="Menu"))
 async def show_menu(message: Message):
     await message.answer(text="Here is our menu.",
-                         reply_markup=generate_menu_keyboard())
+                         reply_markup=category_kb())
+
+
+@dp.callback_query_handler(category_kb_cb.filter())
+async def show_products_in_category(call: CallbackQuery, callback_data: dict):
+    category = callback_data['category']
+    await call.message.answer(f"Choose a product", reply_markup=generate_menu_keyboard(category))
 
 
 products_show_kb_cb: CallbackData = CallbackData("products_show_kb_cb", "title", "product_id")
@@ -53,7 +80,7 @@ async def cb_products_show_id(call: CallbackQuery, callback_data: dict):
     id = callback_data["id"]
     product = get_product(id)
     text = f"Title: {product['title']}\n" \
-           f"Details: {product['details']}\n" \
+           f"Category: {product['category']}\n" \
            f"Price: {product['price']}\n"
     await bot.send_message(call.message.chat.id, text)
     await call.message.answer(f"Would you like to order this product?", reply_markup=get_add_to_cart_kb(product["id"]))
@@ -65,7 +92,7 @@ async def add_order(call: CallbackQuery, callback_data: dict):
     id = callback_data["product_id"]
     product = get_product(id)
     add_to_cart(id, call.from_user.id)
-    await call.message.answer(f"You successfully added {product['title']} to cart")
+    await call.message.answer(f"You successfully added {product['title']} to the cart")
     await call.message.delete()
 
 
