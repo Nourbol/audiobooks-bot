@@ -70,7 +70,12 @@ def get_product(id):
 def add_to_cart(product_id, user_id):
     return True
 
-def get_cart():
+
+def create_order(user_id, phone_number):
+    pass
+
+
+def get_cart(user_id):
     text = [
         {
             "id": "71192dd2-726d-4cb5-8897-088659eb5555",
@@ -98,6 +103,7 @@ def get_cart():
         }
     ]
     return text
+
 
 def delete_from_cart(id, user_id):
     text = [
