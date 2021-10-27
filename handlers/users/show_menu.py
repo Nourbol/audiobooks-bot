@@ -17,19 +17,19 @@ category_kb_cb: CallbackData = CallbackData("category_kb_cb", "category")
 def category_kb():
     return InlineKeyboardMarkup(inline_keyboard=[
         [
-                InlineKeyboardButton(text="Salads", callback_data=category_kb_cb.new(category="Salad"))
+                InlineKeyboardButton(text="Salads 🥗", callback_data=category_kb_cb.new(category="Salad"))
         ],
         [
-            InlineKeyboardButton(text="First dishes", callback_data=category_kb_cb.new(category="First dish"))
+            InlineKeyboardButton(text="First dishes 🍛", callback_data=category_kb_cb.new(category="First dish"))
         ],
         [
-            InlineKeyboardButton(text="Second dishes", callback_data=category_kb_cb.new(category="Second dishes"))
+            InlineKeyboardButton(text="Second dishes 🍲", callback_data=category_kb_cb.new(category="Second dishes"))
         ],
         [
-            InlineKeyboardButton(text="Garnish", callback_data=category_kb_cb.new(category="Garnish"))
+            InlineKeyboardButton(text="Garnish 🍚", callback_data=category_kb_cb.new(category="Garnish"))
         ],
         [
-            InlineKeyboardButton(text="Cancel", callback_data=category_kb_cb.new("cancel"))
+            InlineKeyboardButton(text="Cancel ❌", callback_data=category_kb_cb.new("cancel"))
         ]
     ])
 
@@ -45,11 +45,11 @@ def generate_menu_keyboard(category):
         else:
             kb.insert(InlineKeyboardButton(product["title"], callback_data=product_kb_cb.new(id=product["id"])))
 
-    kb.add(InlineKeyboardButton("Cancel", callback_data="cancel"))
+    kb.add(InlineKeyboardButton("Cancel ❌", callback_data="cancel"))
     return kb
 
 
-@dp.message_handler(Text(equals="Menu"))
+@dp.message_handler(Text(equals="Menu 📔"))
 async def show_menu(message: Message):
     await message.answer(text="Here is our menu.",
                          reply_markup=category_kb())
@@ -70,7 +70,7 @@ def get_add_to_cart_kb(product_id):
             InlineKeyboardButton(text="Add to cart", callback_data=products_show_kb_cb.new("cart", product_id))
         ],
         [
-            InlineKeyboardButton(text="Cancel", callback_data=products_show_kb_cb.new("cancel", product_id))
+            InlineKeyboardButton(text="Cancel ❌", callback_data=products_show_kb_cb.new("cancel", product_id))
         ]
     ])
 

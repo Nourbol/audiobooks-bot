@@ -45,7 +45,8 @@ class OrderCreationState(StatesGroup):
 @dp.callback_query_handler(order_creation_kb_cb.filter(title="order"))
 async def make_order(call: CallbackQuery):
     await OrderCreationState.phone_number.set()
-    await call.message.answer("Now enter your phone number starting with 8")
+    await call.message.answer(f"Please, enter your phone number! \n"
+                              f"Example: 87071112233")
 
 
 def is_phone_correct(phone_number: str):
@@ -58,29 +59,30 @@ def is_phone_correct(phone_number: str):
 async def phone_input(message: Message, state: FSMContext):
     if not is_phone_correct(message.text):
         await message.answer("Phone number is incorrect\n"
-                             "It must be a number with 11 digits and starts with \'8\'\n"
-                             "Like 87071112233")
+                             "The phone number must be 11 digits long and start with \'8\'\n"
+                             "Example: 87071112233")
         return
 
     await state.update_data(phone=message.text)
     await OrderCreationState.confirmation.set()
     products = get_cart(message.from_user.id)
     total = get_total_price(products)
-    await message.answer(f"Are you really want to buy {len(products)}\n"
-                         f"With total price: {total}?", reply_markup=get_yes_no_kb())
+    await message.answer(f"Are you really want to buy {len(products)} products\n"
+                         f"with total price {total} KZT?", reply_markup=get_yes_no_kb())
 
 
 @dp.callback_query_handler(yes_no_kb_cb.filter(), state=OrderCreationState.confirmation)
 async def awaiting(call: CallbackQuery, state: FSMContext, callback_data: dict):
     if callback_data["yes_no"] == "no":
-        await call.message.answer("Canceled")
+        bot.answer_callback_query(call.id, "You canceled the order!", show_alert=True)
         await state.finish()
         return
 
     phone_number = (await state.get_data())["phone"]
     create_order(call.from_user.id, phone_number)
     await state.finish()
-    await call.message.answer("You create an order")
+    await call.message.answer(f"The order has been created!\n"
+                              f"You can pick up your order after a few minutes")
 
 
 def get_total_price(products):
@@ -90,16 +92,16 @@ def get_total_price(products):
         return total
 
 
-@dp.message_handler(text="Cart")
+@dp.message_handler(text="Cart 🛒")
 async def cart_menu(message: Message):
     products = get_cart(message.from_user.id)
 
-    await message.answer(text=f"Total: {get_total_price(products)} KZT\n"
+    await message.answer(text=f"Total price: {get_total_price(products)} KZT\n"
                               "Here is your cart:",
                          reply_markup=get_cart_kb(products))
 
 
-cart_show_product_kb_cb: CallbackData = CallbackData("cart_show_product_kb_cb", "product_id")
+cart_show_product_kb_cb: CallbackData = CallbackData("cart_show_product_kb_cb", "title", "product_id")
 
 
 def delete_from_cart_kb(product_id):
@@ -123,13 +125,13 @@ async def kb_show_product_from_cart(call: CallbackQuery, callback_data: dict):
            f"Price: {product['price']}\n"
     await bot.send_message(call.message.chat.id, text)
     await call.message.answer(f"Would you like to delete {product['title']} from your cart?",
-                              reply_markup=delete_from_cart_kb(product["id"]))
+                              reply_markup=delete_from_cart_kb(product['id']))
     await call.message.delete()
 
 
 @dp.callback_query_handler(cart_show_product_kb_cb.filter(product_id="delete"))
 async def delete_product_from_cart(call: CallbackQuery, callback_data: dict):
-    id = callback_data["product_id"]
+    id = callback_data['product_id']
     delete_from_cart(id, call.from_user.id)
-    await call.message.answer(f"You successfully deleted this product from the cart")
+    await call.message.answer(f"This product has been deleted from the cart!")
     await call.message.delete()
