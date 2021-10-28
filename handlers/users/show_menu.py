@@ -17,16 +17,16 @@ category_kb_cb: CallbackData = CallbackData("category_kb_cb", "category")
 def category_kb():
     return InlineKeyboardMarkup(inline_keyboard=[
         [
-                InlineKeyboardButton(text="Salads 🥗", callback_data=category_kb_cb.new(category="Salad"))
+                InlineKeyboardButton(text="Salads 🥗", callback_data=category_kb_cb.new(category="Salads 🥗"))
         ],
         [
-            InlineKeyboardButton(text="First dishes 🍛", callback_data=category_kb_cb.new(category="First dish"))
+            InlineKeyboardButton(text="First dishes 🍛", callback_data=category_kb_cb.new(category="First dishes 🍛"))
         ],
         [
-            InlineKeyboardButton(text="Second dishes 🍲", callback_data=category_kb_cb.new(category="Second dishes"))
+            InlineKeyboardButton(text="Second dishes 🍲", callback_data=category_kb_cb.new(category="Second dishes 🍲"))
         ],
         [
-            InlineKeyboardButton(text="Garnish 🍚", callback_data=category_kb_cb.new(category="Garnish"))
+            InlineKeyboardButton(text="Garnish 🍚", callback_data=category_kb_cb.new(category="Garnish 🍚"))
         ],
         [
             InlineKeyboardButton(text="Cancel ❌", callback_data=category_kb_cb.new("cancel"))
