@@ -4,6 +4,7 @@ from aiogram.dispatcher.filters import Command, Text
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
+from handlers.users.cart_handlers import get_total_price
 from keyboards.inline.callback_data import show_callback
 from keyboards.inline.choice_buttons import choice
 from loader import dp, bot
@@ -100,3 +101,5 @@ async def add_order(call: CallbackQuery, callback_data: dict):
 async def cancel_showing(call: CallbackQuery):
     await call.message.edit_reply_markup()
     await call.message.delete()
+
+

@@ -1,29 +1,38 @@
 from aiogram.dispatcher.filters import Text
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
-from aiogram.utils.callback_data import CallbackData
+from aiogram.types import Message
 
 from loader import dp
-from utils.apirequests import get_orders
-
-product_kb_cb: CallbackData = CallbackData("product_kb_cb", "title")
+from utils.apirequests import get_order_history
 
 
-def generate_menu_keyboard():
-    kb = InlineKeyboardMarkup()
-    orders = get_orders()
-    for key, order in enumerate(orders):
-        if order["title"] is None or order["title"] == '':
-            continue
-        if key % 2 == 0:
-            kb.add(InlineKeyboardButton(order["title"], callback_data=product_kb_cb.new(order["title"])))
-        else:
-            kb.insert(InlineKeyboardButton(order["title"], callback_data=product_kb_cb.new(order["title"])))
+def show_products_and_prices():
+    reception = get_order_history()
+    text = ''
+    for i in range(len(reception)):
+        orders = reception[i]
+        if orders['orderCode'] == 0:
+            status = "Your order is not ready yet"
+        if orders['orderCode'] == 1:
+            status = "Your order is ready"
+        if orders['orderCode'] == 2:
+            status = "Order is already given"
+        if orders['orderCode'] == 3:
+            status = "Order is not given"
+        text = text + "Order Code: " + str(
+            orders["orderCode"]) + '\n' + "Order Status: " + status + '\n' + "Products: \n"
+        products = orders['products']
+        for key, product in enumerate(products):
+            text = text + product["title"] + " — " + str(product["price"]) + " KZT" + "\n"
+        text = text + "\n\n"
 
-    kb.add(InlineKeyboardButton("Cancel", callback_data="cancel"))
-    return kb
+    return text
 
 
-@dp.message_handler(Text(equals="My orders"))
-async def show_order_list(message: Message):
-    await message.answer(text="Here is our menu.",
-                         reply_markup=generate_menu_keyboard())
+@dp.message_handler(Text(equals="My orders 🧾"))
+async def show_history(message: Message):
+    text = show_products_and_prices()
+    await message.answer(text)
+
+
+
+

@@ -82,7 +82,7 @@ async def awaiting(call: CallbackQuery, state: FSMContext, callback_data: dict):
     create_order(call.from_user.id, phone_number)
     await state.finish()
     await call.message.answer(f"The order has been created!\n"
-                              f"You can pick up your order after a few minutes")
+                              f"You can pick up your order in a few minutes")
 
 
 def get_total_price(products):
@@ -101,17 +101,17 @@ async def cart_menu(message: Message):
                          reply_markup=get_cart_kb(products))
 
 
-cart_show_product_kb_cb: CallbackData = CallbackData("cart_show_product_kb_cb", "title", "product_id")
+show_product_kb_cb: CallbackData = CallbackData("show_product_kb_cb", "title", "product_id")
 
 
 def delete_from_cart_kb(product_id):
     return InlineKeyboardMarkup(inline_keyboard=[
         [
-            InlineKeyboardButton(text="Удалить из корзины",
-                                 callback_data=cart_show_product_kb_cb.new("delete", product_id))
+            InlineKeyboardButton(text="Delete from the cart",
+                                 callback_data=show_product_kb_cb.new("delete", product_id))
         ],
         [
-            InlineKeyboardButton(text="Cancel", callback_data=cart_show_product_kb_cb.new("cancel", product_id))
+            InlineKeyboardButton(text="Cancel", callback_data=show_product_kb_cb.new("cancel", product_id))
         ]
     ])
 
@@ -129,7 +129,7 @@ async def kb_show_product_from_cart(call: CallbackQuery, callback_data: dict):
     await call.message.delete()
 
 
-@dp.callback_query_handler(cart_show_product_kb_cb.filter(product_id="delete"))
+@dp.callback_query_handler(show_product_kb_cb.filter(title="delete"))
 async def delete_product_from_cart(call: CallbackQuery, callback_data: dict):
     id = callback_data['product_id']
     delete_from_cart(id, call.from_user.id)
