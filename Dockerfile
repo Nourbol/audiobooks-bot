@@ -1,3 +1,4 @@
 FROM python:3.8
-RUN pip install -r "Ashana_bot/requirements.txt"
-RUN py "Ashana_bot/app.py"
+WORKDIR "/src/Ashana_bot"
+RUN pip install -r requirements.txt
+RUN py Ashana_bot/app.py
