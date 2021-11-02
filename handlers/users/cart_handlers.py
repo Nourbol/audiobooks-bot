@@ -84,13 +84,15 @@ async def phone_input(message: Message, state: FSMContext):
 
     await state.update_data(phone=phone)
 
-    code = send_code(phone)
-    await state.update_data(confirmation_code=code)
-    await state.update_data(attempts=0)
+    # code = send_code(phone)
+    # await state.update_data(confirmation_code=code)
+    # await state.update_data(attempts=0)
 
-    await OrderCreationState.phone_confirmation.set()
-    await message.answer(f"I've sent confirmation code to your phone number\n"
-                         f"Please, type code bellow")
+    # await OrderCreationState.phone_confirmation.set()
+    # await message.answer(f"I've sent confirmation code to your phone number\n"
+    #                      f"Please, type code bellow")
+    await OrderCreationState.deliveryTime.set()
+    await message.answer("Perfect! Now you can set down your order", reply_markup=get_set_down_order_kb())
 
 
 @dp.message_handler(state=OrderCreationState.phone_confirmation)
