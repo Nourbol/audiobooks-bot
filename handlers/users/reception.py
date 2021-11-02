@@ -1,3 +1,4 @@
+from aiogram.dispatcher import FSMContext
 from aiogram.utils.markdown import bold
 
 from loader import dp
@@ -6,8 +7,9 @@ from keyboards.default import reception
 from aiogram.dispatcher.filters import Command, Text, CommandStart
 
 
-@dp.message_handler(CommandStart())
-async def show_menu(message: Message):
+@dp.message_handler(CommandStart(), state='*')
+async def show_menu(message: Message, state: FSMContext):
+    await state.finish()
     await message.answer("Hello! 👋\n" + 'I am Ashana AITU bot 👩‍🍳'
                          + f"\nI was created for the ICT endterm project. \n"
                            f"You can make orders in AITU's canteen using this bot!",
