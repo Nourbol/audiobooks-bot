@@ -1,3 +1,4 @@
 from aiogram.utils.callback_data import CallbackData
 
-show_callback = CallbackData("show", "title", "price")
+audiobooks_kb_cb: CallbackData = CallbackData('audiobooks_kb_cb', 'audiobook')
+authors_kb_cb: CallbackData = CallbackData('authors_kb_cb', 'author')
